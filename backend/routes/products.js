@@ -3,24 +3,62 @@ import Product from '../models/Product.js'
 
 const router = express.Router()
 
-// Get all products
+// Get all products with advanced filtering
 router.get('/', async (req, res) => {
   try {
-    const { category, subCategory, search, sort, limit = 20, page = 1 } = req.query
+    const { 
+      category, 
+      subCategory, 
+      search, 
+      sort = 'createdAt', 
+      order = -1,
+      limit = 20, 
+      page = 1,
+      minPrice,
+      maxPrice,
+      minRating
+    } = req.query
     
     let query = {}
     
-    if (category) query.category = category
-    if (subCategory) query.subCategory = subCategory
-    if (search) query.name = { $regex: search, $options: 'i' }
+    // Category filter
+    if (category && category !== 'all') {
+      query.category = category
+    }
     
-    let products = Product.find(query)
+    // Subcategory filter
+    if (subCategory && subCategory !== 'all') {
+      query.subCategory = subCategory
+    }
     
-    // Sort
-    if (sort === 'price-low') products = products.sort({ discountPrice: 1 })
-    else if (sort === 'price-high') products = products.sort({ discountPrice: -1 })
-    else if (sort === 'rating') products = products.sort({ rating: -1 })
-    else products = products.sort({ createdAt: -1 })
+    // Search filter - search in name and description
+    if (search && search.trim()) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ]
+    }
+    
+    // Price range filter
+    if (minPrice || maxPrice) {
+      query.discountPrice = {}
+      if (minPrice) query.discountPrice.$gte = parseInt(minPrice)
+      if (maxPrice) query.discountPrice.$lte = parseInt(maxPrice)
+    }
+    
+    // Rating filter
+    if (minRating) {
+      query.rating = { $gte: parseFloat(minRating) }
+    }
+    
+    // Sorting
+    const sortObj = {}
+    const sortField = sort === 'price' ? 'discountPrice' : 
+                      sort === 'rating' ? 'rating' :
+                      sort === 'popular' ? 'reviews' : 'createdAt'
+    sortObj[sortField] = parseInt(order)
+    
+    let products = Product.find(query).sort(sortObj)
     
     // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit)
@@ -56,15 +94,82 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-// Search products
-router.get('/search', async (req, res) => {
+// Search with suggestions
+router.get('/search/suggestions', async (req, res) => {
   try {
     const { q } = req.query
-    const products = await Product.find({
-      name: { $regex: q, $options: 'i' }
-    }).limit(10)
+    if (!q || q.length < 2) {
+      return res.json({ success: true, data: [] })
+    }
     
-    res.json({ success: true, data: products })
+    const suggestions = await Product.find({
+      name: { $regex: q, $options: 'i' }
+    })
+    .select('name category subCategory image')
+    .limit(8)
+    
+    res.json({ success: true, data: suggestions })
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message })
+  }
+})
+
+// Get products by category with subcategories
+router.get('/category/:category', async (req, res) => {
+  try {
+    const { category } = req.params
+    const { subCategory } = req.query
+    
+    let query = { category }
+    if (subCategory && subCategory !== 'all') {
+      query.subCategory = subCategory
+    }
+    
+    const products = await Product.find(query)
+      .sort({ createdAt: -1 })
+      .limit(20)
+    
+    const subcategories = await Product.distinct('subCategory', { category })
+    
+    res.json({
+      success: true,
+      data: products,
+      subcategories: subcategories
+    })
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message })
+  }
+})
+
+// Get recommended/similar products
+router.get('/:id/similar', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id)
+    if (!product) {
+      return res.status(404).json({ success: false, error: 'Product not found' })
+    }
+    
+    const similar = await Product.find({
+      _id: { $ne: product._id },
+      category: product.category,
+      subCategory: product.subCategory
+    })
+    .limit(4)
+    
+    res.json({ success: true, data: similar })
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message })
+  }
+})
+
+// Get bestsellers
+router.get('/bestsellers', async (req, res) => {
+  try {
+    const bestsellers = await Product.find()
+      .sort({ reviews: -1, rating: -1 })
+      .limit(8)
+    
+    res.json({ success: true, data: bestsellers })
   } catch (error) {
     res.status(500).json({ success: false, error: error.message })
   }

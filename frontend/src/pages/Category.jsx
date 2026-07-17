@@ -1,182 +1,152 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
+import { productAPI } from '../utils/api'
 import ProductCard from '../components/ProductCard'
 
 const Category = () => {
   const { category } = useParams()
   const [searchParams] = useSearchParams()
   const subCategory = searchParams.get('sub')
+  const searchQuery = searchParams.get('search')
+  
   const [products, setProducts] = useState([])
-  const [filteredProducts, setFilteredProducts] = useState([])
-  const [sortBy, setSortBy] = useState('popular')
+  const [subcategories, setSubcategories] = useState([])
+  const [selectedSubcategory, setSelectedSubcategory] = useState(subCategory || 'all')
+  const [sortBy, setSortBy] = useState('createdAt')
   const [priceRange, setPriceRange] = useState([0, 5000])
+  const [minRating, setMinRating] = useState(0)
   const [loading, setLoading] = useState(true)
 
-  // Mock products
-  const mockProducts = [
-    {
-      _id: '1',
-      name: 'Money Plant',
-      category: 'plants',
-      subCategory: 'indoor',
-      price: 149,
-      discountPrice: 99,
-      stock: 50,
-      image: 'https://images.unsplash.com/photo-1509909756405-dfc993d674d4?w=300&h=300&fit=crop',
-      rating: 4.8,
-      reviews: 245,
-      deliveryTime: '45'
-    },
-    {
-      _id: '2',
-      name: 'Snake Plant',
-      category: 'plants',
-      subCategory: 'indoor',
-      price: 199,
-      discountPrice: 149,
-      stock: 35,
-      image: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=300&h=300&fit=crop',
-      rating: 4.7,
-      reviews: 189,
-      deliveryTime: '45'
-    },
-    {
-      _id: '3',
-      name: 'Tomato Seeds',
-      category: 'seeds',
-      subCategory: 'vegetable',
-      price: 49,
-      discountPrice: 39,
-      stock: 100,
-      image: 'https://images.unsplash.com/photo-1585551666519-0055eca6402d?w=300&h=300&fit=crop',
-      rating: 4.5,
-      reviews: 89,
-      deliveryTime: '30'
-    },
-    {
-      _id: '4',
-      name: 'Basil Seeds',
-      category: 'seeds',
-      subCategory: 'vegetable',
-      price: 39,
-      discountPrice: 29,
-      stock: 120,
-      image: 'https://images.unsplash.com/photo-1518917183309-9d19ee268e0d?w=300&h=300&fit=crop',
-      rating: 4.6,
-      reviews: 102,
-      deliveryTime: '30'
-    }
-  ]
-
+  // Fetch products and subcategories
   useEffect(() => {
-    // Filter products by category
-    let filtered = mockProducts.filter(p => p.category === category)
-    if (subCategory) {
-      filtered = filtered.filter(p => p.subCategory === subCategory)
-    }
-    setProducts(filtered)
-  }, [category, subCategory])
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        
+        const filters = {
+          category,
+          subCategory: selectedSubcategory !== 'all' ? selectedSubcategory : null,
+          search: searchQuery,
+          sort: sortBy,
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1],
+          minRating: minRating || null
+        }
 
-  useEffect(() => {
-    // Apply sorting and price filter
-    let result = [...products]
+        const response = await productAPI.getAllProducts(filters)
+        setProducts(response.data.data || [])
 
-    // Price filter
-    result = result.filter(p => {
-      const price = p.discountPrice || p.price
-      return price >= priceRange[0] && price <= priceRange[1]
-    })
-
-    // Sort
-    switch (sortBy) {
-      case 'popular':
-        result.sort((a, b) => b.reviews - a.reviews)
-        break
-      case 'rating':
-        result.sort((a, b) => b.rating - a.rating)
-        break
-      case 'priceLow':
-        result.sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price))
-        break
-      case 'priceHigh':
-        result.sort((a, b) => (b.discountPrice || b.price) - (a.discountPrice || a.price))
-        break
-      default:
-        break
+        // Fetch subcategories only once per category
+        if (subcategories.length === 0) {
+          const catResponse = await productAPI.getProductsByCategory(category)
+          setSubcategories(catResponse.data.subcategories || [])
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        setProducts([])
+      } finally {
+        setLoading(false)
+      }
     }
 
-    setFilteredProducts(result)
-    setLoading(false)
-  }, [products, sortBy, priceRange])
+    fetchData()
+  }, [category, selectedSubcategory, sortBy, priceRange, minRating, searchQuery])
 
-  const subCategories = ['indoor', 'vegetable', 'fruit', 'decor', 'flower']
+  const handleSubcategoryChange = (sub) => {
+    setSelectedSubcategory(sub)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <h1 className="text-3xl font-bold text-gray-900 mb-2 capitalize">
-          {category}
+          {category} {searchQuery && `- Results for "${searchQuery}"`}
         </h1>
         <p className="text-gray-600 mb-6">
-          Showing {filteredProducts.length} products
+          Showing {products.length} product{products.length !== 1 ? 's' : ''}
         </p>
 
         <div className="flex gap-8">
           {/* Sidebar */}
           <div className="w-64 flex-shrink-0">
-            <div className="bg-white rounded-lg p-6 sticky top-24">
+            <div className="bg-white rounded-lg p-6 sticky top-24 space-y-6">
               {/* Subcategory filter */}
-              <div className="mb-6">
-                <h3 className="font-bold text-gray-900 mb-3">Type</h3>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-3 text-lg">Type</h3>
                 <div className="space-y-2">
-                  {subCategories.map(sub => (
-                    <label key={sub} className="flex items-center">
-                      <input type="radio" name="subcat" value={sub} 
-                        onChange={() => setPriceRange([0, 5000])}
-                        className="mr-2"
-                      />
-                      <span className="text-sm text-gray-700 capitalize">{sub}</span>
-                    </label>
+                  <button
+                    onClick={() => handleSubcategoryChange('all')}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition ${
+                      selectedSubcategory === 'all'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    All Types
+                  </button>
+                  {subcategories.map(sub => (
+                    <button
+                      key={sub}
+                      onClick={() => handleSubcategoryChange(sub)}
+                      className={`w-full text-left px-3 py-2 rounded-lg transition capitalize ${
+                        selectedSubcategory === sub
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {sub}
+                    </button>
                   ))}
                 </div>
               </div>
 
               {/* Price filter */}
-              <div className="mb-6 border-t pt-6">
-                <h3 className="font-bold text-gray-900 mb-3">Price Range</h3>
-                <div className="flex gap-2 mb-3">
-                  <input
-                    type="number"
-                    min="0"
-                    max="5000"
-                    value={priceRange[0]}
-                    onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                    className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
-                    placeholder="Min"
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    max="5000"
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                    className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
-                    placeholder="Max"
-                  />
+              <div className="border-t pt-6">
+                <h3 className="font-bold text-gray-900 mb-3 text-lg">Price Range</h3>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      max="5000"
+                      value={priceRange[0]}
+                      onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                      className="w-24 px-2 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500"
+                      placeholder="Min"
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="5000"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 5000])}
+                      className="w-24 px-2 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-green-500"
+                      placeholder="Max"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    ₹{priceRange[0]} - ₹{priceRange[1]}
+                  </p>
                 </div>
-                <p className="text-xs text-gray-600">₹{priceRange[0]} - ₹{priceRange[1]}</p>
               </div>
 
               {/* Rating filter */}
               <div className="border-t pt-6">
-                <h3 className="font-bold text-gray-900 mb-3">Rating</h3>
+                <h3 className="font-bold text-gray-900 mb-3 text-lg">Rating</h3>
                 <div className="space-y-2">
                   {[4, 3, 2].map(stars => (
-                    <label key={stars} className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      <span className="text-sm text-gray-700">⭐ {stars}+ stars</span>
-                    </label>
+                    <button
+                      key={stars}
+                      onClick={() => setMinRating(minRating === stars ? 0 : stars)}
+                      className={`w-full text-left px-3 py-2 rounded-lg transition ${
+                        minRating === stars
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      ⭐ {stars}+ stars
+                    </button>
                   ))}
                 </div>
               </div>
@@ -192,12 +162,12 @@ const Category = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-green-500"
                 >
+                  <option value="createdAt">Newest</option>
                   <option value="popular">Most Popular</option>
                   <option value="rating">Highest Rated</option>
-                  <option value="priceLow">Price: Low to High</option>
-                  <option value="priceHigh">Price: High to Low</option>
+                  <option value="price">Price: Low to High</option>
                 </select>
               </div>
             </div>
@@ -209,15 +179,16 @@ const Category = () => {
                   <div key={i} className="h-64 bg-gray-300 rounded-lg animate-pulse"></div>
                 ))}
               </div>
-            ) : filteredProducts.length > 0 ? (
+            ) : products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredProducts.map(product => (
+                {products.map(product => (
                   <ProductCard key={product._id} product={product} />
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-600 text-lg">No products found</p>
+                <p className="text-gray-600 text-lg mb-4">No products found</p>
+                <p className="text-gray-500">Try adjusting your filters or search terms</p>
               </div>
             )}
           </div>

@@ -35,8 +35,11 @@ const productSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: 'https://via.placeholder.com/300'
+    default: ''
   },
+  images: [{
+    type: String
+  }],
   stock: {
     type: Number,
     default: 0,

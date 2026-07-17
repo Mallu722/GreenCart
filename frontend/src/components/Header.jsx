@@ -1,23 +1,15 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import SearchBar from './SearchBar'
 
 const Header = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { getTotalItems } = useCart()
   const [location_, setLocation_] = useState('Select Location')
-  const [searchQuery, setSearchQuery] = useState('')
   const totalItems = getTotalItems()
   const isAuthenticated = localStorage.getItem('token')
-
-  const handleSearch = (e) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`)
-      setSearchQuery('')
-    }
-  }
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
@@ -68,23 +60,9 @@ const Header = () => {
           </Link>
 
           {/* Search bar */}
-          <form onSubmit={handleSearch} className="flex-grow mx-4">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search plants, seeds..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
-              />
-              <button 
-                type="submit"
-                className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-              >
-                🔍
-              </button>
-            </div>
-          </form>
+          <div className="flex-grow mx-4">
+            <SearchBar />
+          </div>
 
           {/* Cart icon */}
           <Link to="/cart" className="relative flex-shrink-0">

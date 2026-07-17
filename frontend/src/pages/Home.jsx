@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { productAPI } from '../utils/api'
 import ProductCard from '../components/ProductCard'
 import { formatPrice } from '../utils/formatters'
 
@@ -34,132 +35,25 @@ const Home = () => {
     }
   ]
 
-  // Mock products
-  const mockBestSellers = [
-    {
-      _id: '1',
-      name: 'Money Plant',
-      category: 'plants',
-      subCategory: 'indoor',
-      price: 149,
-      discountPrice: 99,
-      stock: 50,
-      image: 'https://images.unsplash.com/photo-1509909756405-dfc993d674d4?w=300&h=300&fit=crop',
-      rating: 4.8,
-      reviews: 245,
-      deliveryTime: '45',
-      description: 'Low maintenance indoor plant'
-    },
-    {
-      _id: '2',
-      name: 'Snake Plant',
-      category: 'plants',
-      subCategory: 'indoor',
-      price: 199,
-      discountPrice: 149,
-      stock: 35,
-      image: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=300&h=300&fit=crop',
-      rating: 4.7,
-      reviews: 189,
-      deliveryTime: '45',
-      description: 'Perfect for air purification'
-    },
-    {
-      _id: '3',
-      name: 'Pothos Plant',
-      category: 'plants',
-      subCategory: 'indoor',
-      price: 129,
-      discountPrice: 79,
-      stock: 60,
-      image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=300&h=300&fit=crop',
-      rating: 4.9,
-      reviews: 312,
-      deliveryTime: '45',
-      description: 'Easy to grow, trailing vine'
-    },
-    {
-      _id: '4',
-      name: 'Spider Plant',
-      category: 'plants',
-      subCategory: 'indoor',
-      price: 159,
-      discountPrice: 109,
-      stock: 25,
-      image: 'https://images.unsplash.com/photo-1450126613828-dc30d279aacc?w=300&h=300&fit=crop',
-      rating: 4.6,
-      reviews: 156,
-      deliveryTime: '45',
-      description: 'Great for hanging baskets'
-    }
-  ]
-
-  const mockNewArrivals = [
-    {
-      _id: '5',
-      name: 'Tomato Seeds',
-      category: 'seeds',
-      subCategory: 'vegetable',
-      price: 49,
-      discountPrice: 39,
-      stock: 100,
-      image: 'https://images.unsplash.com/photo-1585551666519-0055eca6402d?w=300&h=300&fit=crop',
-      rating: 4.5,
-      reviews: 89,
-      deliveryTime: '30',
-      description: 'Premium hybrid tomato seeds'
-    },
-    {
-      _id: '6',
-      name: 'Sunflower Seeds',
-      category: 'seeds',
-      subCategory: 'flower',
-      price: 59,
-      discountPrice: 44,
-      stock: 80,
-      image: 'https://images.unsplash.com/photo-1599599810694-b5ac4dd64e1d?w=300&h=300&fit=crop',
-      rating: 4.7,
-      reviews: 134,
-      deliveryTime: '30',
-      description: 'Bright yellow sunflower seeds'
-    },
-    {
-      _id: '7',
-      name: 'Aloe Vera Plant',
-      category: 'plants',
-      subCategory: 'decor',
-      price: 179,
-      discountPrice: 129,
-      stock: 45,
-      image: 'https://images.unsplash.com/photo-1576420344272-c6f05ad9e4b7?w=300&h=300&fit=crop',
-      rating: 4.8,
-      reviews: 201,
-      deliveryTime: '45',
-      description: 'Medicinal and decorative'
-    },
-    {
-      _id: '8',
-      name: 'Cucumber Seeds',
-      category: 'seeds',
-      subCategory: 'vegetable',
-      price: 45,
-      discountPrice: 29,
-      stock: 120,
-      image: 'https://images.unsplash.com/photo-1518917183309-9d19ee268e0d?w=300&h=300&fit=crop',
-      rating: 4.4,
-      reviews: 76,
-      deliveryTime: '30',
-      description: 'Fresh cucumber seeds'
-    }
-  ]
-
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setBestSellers(mockBestSellers)
-      setNewArrivals(mockNewArrivals)
-      setLoading(false)
-    }, 500)
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const [bestsellersRes, newArrivalsRes] = await Promise.all([
+          productAPI.getBestsellers(),
+          productAPI.getAllProducts({ sort: 'createdAt', limit: 8 })
+        ])
+        
+        setBestSellers(bestsellersRes.data.data || [])
+        setNewArrivals(newArrivalsRes.data.data || [])
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
   }, [])
 
   useEffect(() => {
@@ -222,7 +116,7 @@ const Home = () => {
             { name: 'Fruit Seeds', emoji: '🍒', link: '/category/seeds?sub=fruit' },
             { name: 'Flower Seeds', emoji: '🌻', link: '/category/seeds?sub=flower' },
             { name: 'Decor Plants', emoji: '🌿', link: '/category/plants?sub=decor' },
-            { name: 'Tools & Pots', emoji: '🪴', link: '/category/tools' }
+            { name: 'All Plants', emoji: '🌾', link: '/category/plants' }
           ].map((cat, idx) => (
             <Link key={idx} to={cat.link}>
               <div className="bg-white rounded-lg p-6 text-center hover:shadow-lg transition cursor-pointer">
@@ -239,17 +133,19 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">🔥 Best Sellers</h2>
           {loading ? (
-            <div className="flex gap-4 overflow-x-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="w-48 h-64 bg-gray-300 rounded-lg animate-pulse"></div>
+                <div key={i} className="h-64 bg-gray-300 rounded-lg animate-pulse"></div>
               ))}
             </div>
-          ) : (
+          ) : bestSellers.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {bestSellers.map(product => (
+              {bestSellers.slice(0, 4).map(product => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>
+          ) : (
+            <p className="text-gray-600">No products available</p>
           )}
         </div>
       </div>
@@ -258,17 +154,19 @@ const Home = () => {
       <div className="max-w-7xl mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">✨ New Arrivals</h2>
         {loading ? (
-          <div className="flex gap-4 overflow-x-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="w-48 h-64 bg-gray-300 rounded-lg animate-pulse"></div>
+              <div key={i} className="h-64 bg-gray-300 rounded-lg animate-pulse"></div>
             ))}
           </div>
-        ) : (
+        ) : newArrivals.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {newArrivals.map(product => (
+            {newArrivals.slice(0, 4).map(product => (
               <ProductCard key={product._id} product={product} />
             ))}
           </div>
+        ) : (
+          <p className="text-gray-600">No products available</p>
         )}
       </div>
 
