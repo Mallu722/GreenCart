@@ -31,6 +31,16 @@ GreenCart is a modern e-commerce platform for buying plants and seeds with featu
 - **JWT** (Authentication)
 - **bcryptjs** (Password hashing)
 
+## 💡 Key Technical Highlights (Interviewer Showcase)
+
+- **RESTful API Architecture & Separation of Concerns**: Designed modular backend routes (`/auth`, `/products`, `/orders`, `/admin`) using Express.js to maintain a clear boundary of responsibility and clean code patterns.
+- **Express Route Ordering Optimization**: Resolved routing collisions by reordering parameterized routes (`/:id`) after static routes (like `/bestsellers` and `/search/suggestions`), ensuring Express matches static endpoints correctly instead of throwing casting errors.
+- **Decoupled Configuration for Production Deployments**: Backend CORS and ports are fully dynamic using `dotenv`, and the frontend communicates via Vite environment variables (`import.meta.env.VITE_API_URL`). This makes the codebase fully cloud-ready for platforms like Render, Vercel, or Netlify.
+- **Centralized State Management (React Context API)**: Managed global application state (Shopping Cart and User Wishlist) using React Context Provider pattern, eliminating prop drilling and optimizing component rendering.
+- **Mongoose Operations & Query Optimization**: Implemented advanced MongoDB querying techniques including multi-field queries, pagination, dynamic sort configurations (sorting by review count, rating, and creation date), and regular expressions (`$regex` with `$options: 'i'`) for real-time search suggestions.
+- **Stateful Navigation & Secure Axios Interceptors**: Implemented client-side JWT persistence in `localStorage` and utilized Axios request interceptors to dynamically append Authorization headers to private requests, protecting backend routes.
+- **Interactive Admin Dashboard & Real-Time Propagation**: Created an administrative interface to perform CRUD operations on products and manage orders. Successfully integrated dynamic timestamps (`createdAt`) so that admin-added products are automatically prepended and highlighted in the frontend's "New Arrivals" section.
+
 ## 📂 Project Structure
 
 ```
