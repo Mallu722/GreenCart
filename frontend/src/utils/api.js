@@ -30,28 +30,28 @@ export const productAPI = {
     if (filters.minRating) params.append('minRating', filters.minRating)
     if (filters.page) params.append('page', filters.page)
     if (filters.limit) params.append('limit', filters.limit)
-    
+
     return api.get(`/products?${params.toString()}`)
   },
-  
+
   getProductById: (id) => api.get(`/products/${id}`),
-  
+
   getProductsByCategory: (category, subCategory = null) => {
     let url = `/products/category/${category}`
     if (subCategory) url += `?subCategory=${subCategory}`
     return api.get(url)
   },
-  
+
   searchProducts: (query) => api.get('/products', {
     params: { search: query }
   }),
-  
+
   getSearchSuggestions: (query) => api.get('/products/search/suggestions', {
     params: { q: query }
   }),
-  
+
   getSimilarProducts: (productId) => api.get(`/products/${productId}/similar`),
-  
+
   getBestsellers: () => api.get('/products/bestsellers')
 }
 

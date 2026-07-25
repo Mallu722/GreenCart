@@ -17,28 +17,32 @@ const Home = () => {
       title: '🔥 Best Seller: Monstera Deliciosa',
       subtitle: 'Lush statement plant to elevate your living room',
       image: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=1200&h=400&fit=crop',
-      cta: 'Buy Monstera'
+      cta: 'Buy Monstera',
+      link: '/category/plants'
     },
     {
       id: 2,
       title: '🌿 Popular: Money Plant (Pothos)',
       subtitle: 'Air-purifying trailing vine for luck and prosperity',
       image: 'https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?w=1200&h=400&fit=crop',
-      cta: 'Order Pothos'
+      cta: 'Order Pothos',
+      link: '/category/plants'
     },
     {
       id: 3,
-      title: '🟫 New: Premium Potting Soil Mix',
+      title: '🌲 New: Premium Potting Soil Mix',
       subtitle: 'Enriched organic mix for strong roots and healthy growth',
       image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1200&h=400&fit=crop',
-      cta: 'Shop Soil'
+      cta: 'Shop Soil',
+      link: '/category/soil'
     },
     {
       id: 4,
       title: '🌻 Trending: Sunflower Seeds',
       subtitle: 'Premium gardening seeds for bright yellow blossoms',
       image: 'https://images.unsplash.com/photo-1597848212624-753a6238abeb?w=1200&h=400&fit=crop',
-      cta: 'Shop Seeds'
+      cta: 'Shop Seeds',
+      link: '/category/seeds'
     }
   ]
 
@@ -90,9 +94,11 @@ const Home = () => {
             <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
               <h1 className="text-4xl md:text-5xl font-bold mb-2">{banner.title}</h1>
               <p className="text-lg md:text-xl mb-6">{banner.subtitle}</p>
-              <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
-                {banner.cta}
-              </button>
+              <Link to={banner.link}>
+                <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition">
+                  {banner.cta}
+                </button>
+              </Link>
             </div>
           </div>
         ))}
