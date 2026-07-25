@@ -278,22 +278,6 @@ npm run dev
 - `GET /api/admin/orders` - Get all orders
 - `PATCH /api/admin/orders/:id` - Update order status
 
-## 🧪 Demo Credentials
-- **Email**: demo@greencart.com
-- **Password**: demo123
-
-## 🎓 Resume Points
-1. Full-stack MERN application
-2. Modern React with hooks and Context API
-3. Responsive design with Tailwind CSS
-4. JWT authentication
-5. MongoDB data modeling
-6. RESTful API design
-7. Admin panel with CRUD operations
-8. Cart and wishlist functionality
-9. Multi-step checkout flow
-10. Mobile-first design approach
-
 ## 🔄 Data Flow
 
 ```
@@ -330,8 +314,6 @@ User → Frontend (React) → API Calls (Axios)
 - Plant care tips blog
 - Video tutorials
 
-## 📄 License
-MIT License - Feel free to use this project as a portfolio piece or learning resource.
 
 ## 👨‍💻 Developer Notes
 - Built with focus on clean code and reusability
@@ -342,5 +324,3 @@ MIT License - Feel free to use this project as a portfolio piece or learning res
 - Ready for production with minor changes
 
 ---
-
-**Made with 🌿 for plant lovers and developers!**
