@@ -8,15 +8,19 @@ const Checkout = () => {
   const navigate = useNavigate()
   const { cartItems, getTotalPrice, clearCart } = useCart()
   const [step, setStep] = useState(1) // 1: Address, 2: Payment
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    pincode: '',
-    address: '',
-    landmark: '',
-    city: '',
-    state: ''
+  const [formData, setFormData] = useState(() => {
+    const savedAddress = localStorage.getItem('deliveryAddressFull') || ''
+    const savedCity = localStorage.getItem('selectedLocation') || ''
+    return {
+      firstName: '',
+      lastName: '',
+      phone: '',
+      pincode: '',
+      address: savedAddress,
+      landmark: '',
+      city: savedCity === 'Select Location' ? '' : savedCity,
+      state: ''
+    }
   })
   const [paymentMethod, setPaymentMethod] = useState('cod')
 

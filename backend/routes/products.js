@@ -53,10 +53,23 @@ router.get('/', async (req, res) => {
     
     // Sorting
     const sortObj = {}
-    const sortField = sort === 'price' ? 'discountPrice' : 
-                      sort === 'rating' ? 'rating' :
-                      sort === 'popular' ? 'reviews' : 'createdAt'
-    sortObj[sortField] = parseInt(order)
+    let sortField = 'createdAt'
+    let sortOrder = -1
+
+    if (sort === 'price') {
+      sortField = 'discountPrice'
+      sortOrder = 1 // Low to high
+    } else if (sort === 'priceDesc') {
+      sortField = 'discountPrice'
+      sortOrder = -1 // High to low
+    } else if (sort === 'rating') {
+      sortField = 'rating'
+      sortOrder = -1 // Highest rated
+    } else if (sort === 'popular') {
+      sortField = 'reviews'
+      sortOrder = -1 // Most popular
+    }
+    sortObj[sortField] = sortOrder
     
     let products = Product.find(query).sort(sortObj)
     
@@ -81,14 +94,14 @@ router.get('/', async (req, res) => {
   }
 })
 
-// Get single product
-router.get('/:id', async (req, res) => {
+// Get bestsellers
+router.get('/bestsellers', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id)
-    if (!product) {
-      return res.status(404).json({ success: false, error: 'Product not found' })
-    }
-    res.json({ success: true, data: product })
+    const bestsellers = await Product.find()
+      .sort({ reviews: -1, rating: -1 })
+      .limit(8)
+    
+    res.json({ success: true, data: bestsellers })
   } catch (error) {
     res.status(500).json({ success: false, error: error.message })
   }
@@ -141,6 +154,19 @@ router.get('/category/:category', async (req, res) => {
   }
 })
 
+// Get single product
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id)
+    if (!product) {
+      return res.status(404).json({ success: false, error: 'Product not found' })
+    }
+    res.json({ success: true, data: product })
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message })
+  }
+})
+
 // Get recommended/similar products
 router.get('/:id/similar', async (req, res) => {
   try {
@@ -157,19 +183,6 @@ router.get('/:id/similar', async (req, res) => {
     .limit(4)
     
     res.json({ success: true, data: similar })
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
-  }
-})
-
-// Get bestsellers
-router.get('/bestsellers', async (req, res) => {
-  try {
-    const bestsellers = await Product.find()
-      .sort({ reviews: -1, rating: -1 })
-      .limit(8)
-    
-    res.json({ success: true, data: bestsellers })
   } catch (error) {
     res.status(500).json({ success: false, error: error.message })
   }

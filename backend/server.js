@@ -6,6 +6,7 @@ import productRoutes from './routes/products.js'
 import authRoutes from './routes/auth.js'
 import orderRoutes from './routes/orders.js'
 import adminRoutes from './routes/admin.js'
+import { seedDatabase } from './seeds.js'
 
 dotenv.config()
 
@@ -21,7 +22,10 @@ app.use(express.urlencoded({ extended: true }))
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/greencart')
-  .then(() => console.log('MongoDB connected'))
+  .then(() => {
+    console.log('MongoDB connected')
+    seedDatabase() // Dynamically seed if DB is empty
+  })
   .catch(err => console.error('MongoDB connection error:', err))
 
 // Routes

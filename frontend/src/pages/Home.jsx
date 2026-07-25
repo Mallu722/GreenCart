@@ -14,24 +14,31 @@ const Home = () => {
   const banners = [
     {
       id: 1,
-      title: 'Fresh Plants Delivered',
-      subtitle: 'Get plants in 45 minutes',
-      image: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=1200&h=400&fit=crop',
-      cta: 'Shop Now'
+      title: '🔥 Best Seller: Monstera Deliciosa',
+      subtitle: 'Lush statement plant to elevate your living room',
+      image: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=1200&h=400&fit=crop',
+      cta: 'Buy Monstera'
     },
     {
       id: 2,
-      title: 'Start Your Garden',
-      subtitle: 'Premium seeds collection',
-      image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=1200&h=400&fit=crop',
-      cta: 'Explore'
+      title: '🌿 Popular: Money Plant (Pothos)',
+      subtitle: 'Air-purifying trailing vine for luck and prosperity',
+      image: 'https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?w=1200&h=400&fit=crop',
+      cta: 'Order Pothos'
     },
     {
       id: 3,
-      title: 'Indoor Plant Care',
-      subtitle: 'Best for home decoration',
-      image: 'https://images.unsplash.com/photo-1502082553048-f007c77b6dba?w=1200&h=400&fit=crop',
-      cta: 'Discover'
+      title: '🟫 New: Premium Potting Soil Mix',
+      subtitle: 'Enriched organic mix for strong roots and healthy growth',
+      image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1200&h=400&fit=crop',
+      cta: 'Shop Soil'
+    },
+    {
+      id: 4,
+      title: '🌻 Trending: Sunflower Seeds',
+      subtitle: 'Premium gardening seeds for bright yellow blossoms',
+      image: 'https://images.unsplash.com/photo-1597848212624-753a6238abeb?w=1200&h=400&fit=crop',
+      cta: 'Shop Seeds'
     }
   ]
 
@@ -107,7 +114,7 @@ const Home = () => {
       {/* Category Quick Access */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Shop by Category</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {[
             { name: 'Indoor Plants', emoji: '🪴', link: '/category/plants?sub=indoor' },
             { name: 'Vegetable Plants', emoji: '🥬', link: '/category/plants?sub=vegetable' },
@@ -115,11 +122,15 @@ const Home = () => {
             { name: 'Vegetable Seeds', emoji: '🌱', link: '/category/seeds?sub=vegetable' },
             { name: 'Fruit Seeds', emoji: '🍒', link: '/category/seeds?sub=fruit' },
             { name: 'Flower Seeds', emoji: '🌻', link: '/category/seeds?sub=flower' },
-            { name: 'Decor Plants', emoji: '🌿', link: '/category/plants?sub=decor' },
-            { name: 'All Plants', emoji: '🌾', link: '/category/plants' }
+            { name: 'Potting Soils', emoji: '🪵', link: '/category/soil?sub=potting' },
+            { name: 'Organic Compost', emoji: '🟫', link: '/category/soil?sub=organic' },
+            { name: 'Soil Fertilizers', emoji: '🧪', link: '/category/soil?sub=fertilizer' },
+            { name: 'All Plants', emoji: '🌾', link: '/category/plants' },
+            { name: 'All Seeds', emoji: '🌻', link: '/category/seeds' },
+            { name: 'All Soils', emoji: '🌍', link: '/category/soil' }
           ].map((cat, idx) => (
             <Link key={idx} to={cat.link}>
-              <div className="bg-white rounded-lg p-6 text-center hover:shadow-lg transition cursor-pointer">
+              <div className="bg-white rounded-lg p-6 text-center hover:shadow-lg transition cursor-pointer h-full flex flex-col justify-center border border-gray-100">
                 <div className="text-4xl mb-2">{cat.emoji}</div>
                 <p className="font-semibold text-gray-900 text-sm">{cat.name}</p>
               </div>

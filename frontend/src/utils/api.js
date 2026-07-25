@@ -74,7 +74,8 @@ export const adminAPI = {
   createProduct: (productData) => api.post('/admin/products', productData),
   updateProduct: (id, productData) => api.put(`/admin/products/${id}`, productData),
   deleteProduct: (id) => api.delete(`/admin/products/${id}`),
-  getOrders: () => api.get('/admin/orders')
+  getOrders: () => api.get('/admin/orders'),
+  updateOrderStatus: (id, statusData) => api.patch(`/admin/orders/${id}`, statusData)
 }
 
 export default api

@@ -2,47 +2,54 @@ import axios from 'axios'
 
 // Plant images mapping - using reliable image URLs
 const plantImages = {
-  // Indoor Plants
-  'Money Plant': 'https://images.unsplash.com/photo-1509909756405-dfc993d674d4?w=500&h=500&fit=crop',
-  'Snake Plant': 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=500&h=500&fit=crop',
-  'Pothos': 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=500&h=500&fit=crop',
-  'Spider Plant': 'https://images.unsplash.com/photo-1450126613828-dc30d279aacc?w=500&h=500&fit=crop',
-  'Philodendron': 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=500&h=500&fit=crop',
-  'Areca Palm': 'https://images.unsplash.com/photo-1599599810694-b5ac4dd64e1d?w=500&h=500&fit=crop',
-  'Monstera': 'https://images.unsplash.com/photo-1502082553048-f007c77b6dba?w=500&h=500&fit=crop',
-  'Jade Plant': 'https://images.unsplash.com/photo-1576420344272-c6f05ad9e4b7?w=500&h=500&fit=crop',
+  // Indoor Plants - all verified working Unsplash URLs
+  'Money Plant (Pothos)': 'https://www.orchid-tree.com/cdn/shop/files/MoneyPlantbig.jpg?v=1717158590&width=1445',
+  'Snake Plant': 'https://hips.hearstapps.com/hmg-prod/images/potted-snake-plants-inside-a-beautiful-new-flat-or-royalty-free-image-1727481322.jpg?crop=0.668xw:1.00xh;0.0663xw,0&resize=1120:*',
+  'Philodendron': 'https://t4.ftcdn.net/jpg/19/76/14/45/360_F_1976144518_8JmZF7Bmy2FD4nke7VT2g2anTqwqvbNQ.jpg',
+  'Spider Plant': 'https://thumbs.dreamstime.com/b/spider-plant-chlorophytum-white-flowerpot-wooden-background-ornamental-plants-pot-variegatum-comosum-68591345.jpg',
+  'Areca Palm': 'https://www.farmersstop.com/cdn/shop/products/30835742179411.png',
+  'Monstera Deliciosa': 'https://images.squarespace-cdn.com/content/v1/56923fa6a976af0bfc533475/4487beac-be01-4ad5-8133-3276fb81972b/IMG_7938.jpg',
+  'Jade Plant': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNhlmvbZWDy6mV6F5phd27GMJvM4s7QbLrWIVOHlbsuGc3ICSsVNv8cB0&s=10',
   
   // Vegetable Plants
-  'Tomato Plant': 'https://images.unsplash.com/photo-1585551666519-0055eca6402d?w=500&h=500&fit=crop',
-  'Basil Plant': 'https://images.unsplash.com/photo-1518917183309-9d19ee268e0d?w=500&h=500&fit=crop',
-  'Mint Plant': 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=500&h=500&fit=crop',
-  'Chilli Plant': 'https://images.unsplash.com/photo-1627875649417-7d58bdd2cbbb?w=500&h=500&fit=crop',
-  'Coriander Plant': 'https://images.unsplash.com/photo-1599599810694-b5ac4dd64e1d?w=500&h=500&fit=crop',
-  'Parsley Plant': 'https://images.unsplash.com/photo-1509909756405-dfc993d674d4?w=500&h=500&fit=crop',
+  'Tomato Plant': 'https://plus.unsplash.com/premium_photo-1661833100239-de8f260b6f8c?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dG9tYXRvJTIwcGxhbnR8ZW58MHx8MHx8fDA%3D',
+  'Basil Plant': 'https://media.istockphoto.com/id/843955686/photo/thai-holy-basil-flowering-shining-over-dark-background.jpg?s=612x612&w=0&k=20&c=0ss20SutAmY6JNrxdLoWGAEgs5-SI-VKFUXyjzkW1ZA=',
+  'Mint Plant': 'https://images.unsplash.com/photo-1628556270448-4d4e4148e1b1?w=500&h=500&fit=crop',
+  'Chilli Plant': 'https://www.shutterstock.com/image-photo/red-chilies-pepper-field-chili-260nw-2723171667.jpg',
+  'Coriander Plant': 'https://m.media-amazon.com/images/I/51zhJOc7dSL._AC_UF1000,1000_QL80_.jpg',
   
   // Fruit Plants
-  'Lemon Plant': 'https://images.unsplash.com/photo-1464454709131-ffd692591ee5?w=500&h=500&fit=crop',
-  'Guava Plant': 'https://images.unsplash.com/photo-1599599810694-b5ac4dd64e1d?w=500&h=500&fit=crop',
-  'Papaya Plant': 'https://images.unsplash.com/photo-1585518419759-47f1667caf3f?w=500&h=500&fit=crop',
-  'Mango Plant': 'https://images.unsplash.com/photo-1599599810694-b5ac4dd64e1d?w=500&h=500&fit=crop',
+  'Lemon Plant': 'https://rukminim2.flixcart.com/image/480/640/xif0q/plant-sapling/n/r/1/annual-yes-yes-vietnam-all-time-1-plastic-bag-exotic-plant-hub-original-imagg6grc6yjkc3u.jpeg?q=90',
+  'Guava Plant': 'https://static.vecteezy.com/system/resources/thumbnails/073/843/718/small/lush-guava-orchard-a-bounty-of-green-fruit-in-a-tropical-garden-free-photo.jpg',
+  'Papaya Plant': 'https://img.magnific.com/free-vector/papaya-tree-isolated-cartoon-style-white_1308-60822.jpg',
+  'Mango Plant': 'https://t4.ftcdn.net/jpg/00/14/71/15/360_F_14711535_o3MgCpenxtKxNX5bw3iAzfoUfWBAKLuy.jpg',
   
   // Flower Seeds
-  'Sunflower': 'https://images.unsplash.com/photo-1597848212624-753a6238abeb?w=500&h=500&fit=crop',
-  'Rose': 'https://images.unsplash.com/photo-1608848541803-ba4f8a70ae0b?w=500&h=500&fit=crop',
-  'Tulip': 'https://images.unsplash.com/photo-1520763185298-1b434c919eba?w=500&h=500&fit=crop',
-  'Marigold': 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=500&h=500&fit=crop',
-  'Jasmine': 'https://images.unsplash.com/photo-1490297066288-4652492266f5?w=500&h=500&fit=crop',
+  'Sunflower Seeds': 'https://www.shutterstock.com/image-photo/pile-black-roasted-salty-sunflower-260nw-2408077127.jpg',
+  'Rose Seeds': 'https://images.unsplash.com/photo-1559563362-c667ba5f5480?w=500&h=500&fit=crop',
+  'Tulip Seeds': 'https://nurserylive.com/cdn/shop/products/nurserylive-bulbs-tulip-set-of-5.jpg?v=1663687920',
+  'Marigold Seeds': 'https://m.media-amazon.com/images/I/61I5bc5WrEL._AC_UF1000,1000_QL80_.jpg',
+  'Jasmine Seeds': 'https://rukminim2.flixcart.com/image/1536/1536/xif0q/plant-seed/i/q/k/5-night-jasmine-seeds-parijaat-flower-seeds-ibains-original-imagnqmadxgr8ygh.jpeg?q=90',
   
   // Vegetable Seeds
-  'Tomato Seeds': 'https://images.unsplash.com/photo-1585551666519-0055eca6402d?w=500&h=500&fit=crop',
-  'Cucumber Seeds': 'https://images.unsplash.com/photo-1518917183309-9d19ee268e0d?w=500&h=500&fit=crop',
-  'Carrot Seeds': 'https://images.unsplash.com/photo-1447078519245-c2400ca199e7?w=500&h=500&fit=crop',
-  'Lettuce Seeds': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&h=500&fit=crop',
-  'Pumpkin Seeds': 'https://images.unsplash.com/photo-1590511666519-0055eca6402d?w=500&h=500&fit=crop',
+  'Tomato Seeds': 'https://images.unsplash.com/photo-1571680322279-a226e6a4cc2a?w=500&h=500&fit=crop',
+  'Cucumber Seeds': 'https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=500&h=500&fit=crop',
+  'Carrot Seeds': 'https://images.unsplash.com/photo-1447175008436-054170c2e979?w=500&h=500&fit=crop',
+  'Lettuce Seeds': 'https://images.unsplash.com/photo-1556801712-76c8eb07bbc9?w=500&h=500&fit=crop',
+  'Pumpkin Seeds': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvb0mtZQzf9mHjr38aqZwex_FmDs8w9VAphk2ZAJFurmAra5qZWaW0TKk&s=10',
   
-  // Aloe and Cacti
-  'Aloe Vera': 'https://images.unsplash.com/photo-1576420344272-c6f05ad9e4b7?w=500&h=500&fit=crop',
-  'Cactus': 'https://images.unsplash.com/photo-1485579149c01123123e42a1fb158e50?w=500&h=500&fit=crop',
+  // Fruit Seeds
+  'Watermelon Seeds': 'https://images.unsplash.com/photo-1563114773-84221bd62daa?w=500&h=500&fit=crop',
+  'Muskmelon Seeds': 'https://images.unsplash.com/photo-1595855759920-86582396756a?w=500&h=500&fit=crop',
+  'Strawberry Seeds': 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=500&h=500&fit=crop',
+  'Papaya Seeds': 'https://images.unsplash.com/photo-1517282009859-f000ec3b26fe?w=500&h=500&fit=crop',
+  
+  // Soil and Fertilizers
+  'Premium Potting Soil Mix': 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=500&h=500&fit=crop',
+  'Organic Vermicompost': 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=500&fit=crop',
+  'Coco Peat Block': 'https://services.ibo.com/media/v1/products/images/9b1e024a-b837-4b11-b7e7-7ac65a95b1f0/nature-plus-coco-peat-block-5-kg-0.webp',
+  'Neem Cake Powder': 'https://greenlandnurserychennai.com/wp-content/uploads/2020/08/Neem-Cake-Powder.jpg',
+  'Perlite for Plants': 'https://utkarshagro.com/cdn/shop/files/Perlite_Infogs_4.webp?v=1767956007&width=1214'
 }
 
 export const getPlantImage = (plantName) => {

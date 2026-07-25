@@ -1,15 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import SearchBar from './SearchBar'
+import LocationModal from './LocationModal'
 
 const Header = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { getTotalItems } = useCart()
   const [location_, setLocation_] = useState('Select Location')
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false)
   const totalItems = getTotalItems()
   const isAuthenticated = localStorage.getItem('token')
+
+  // Load saved location on mount
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('selectedLocation')
+    if (savedLocation) {
+      setLocation_(savedLocation)
+    }
+  }, [])
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
@@ -18,10 +28,10 @@ const Header = () => {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
             <button 
-              className="text-green-600 font-semibold hover:text-green-700"
-              onClick={() => setLocation_('Mumbai')}
+              className="text-green-600 font-semibold hover:text-green-700 flex items-center gap-1"
+              onClick={() => setIsLocationModalOpen(true)}
             >
-              📍 {location_}
+              <span>📍</span> {location_}
             </button>
           </div>
           <div className="flex items-center gap-6">
@@ -104,11 +114,32 @@ const Header = () => {
           >
             Seeds
           </Link>
+          <Link 
+            to="/category/soil" 
+            className={`py-2 font-medium transition ${
+              location.pathname.includes('soil') 
+                ? 'text-green-600 border-b-2 border-green-600' 
+                : 'text-gray-600 hover:text-green-600'
+            }`}
+          >
+            Soil
+          </Link>
         </div>
       </div>
 
       {/* Toast container */}
       <div id="toast-container" className="fixed bottom-4 right-4 z-50"></div>
+
+      {/* Location Selector Modal */}
+      <LocationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+        onConfirm={(loc) => {
+          setLocation_(loc.shortName)
+          localStorage.setItem('selectedLocation', loc.shortName)
+          localStorage.setItem('deliveryAddressFull', loc.fullName)
+        }}
+      />
     </header>
   )
 }

@@ -8,12 +8,12 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['plants', 'seeds'],
+    enum: ['plants', 'seeds', 'soil'],
     required: true
   },
   subCategory: {
     type: String,
-    enum: ['indoor', 'vegetable', 'fruit', 'decor', 'flower'],
+    enum: ['indoor', 'vegetable', 'fruit', 'decor', 'flower', 'potting', 'organic', 'fertilizer'],
     required: true
   },
   price: {

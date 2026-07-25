@@ -5,19 +5,41 @@ import ProductCard from '../components/ProductCard'
 
 const Category = () => {
   const { category } = useParams()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const subCategory = searchParams.get('sub')
   const searchQuery = searchParams.get('search')
   
   const [products, setProducts] = useState([])
   const [subcategories, setSubcategories] = useState([])
-  const [selectedSubcategory, setSelectedSubcategory] = useState(subCategory || 'all')
   const [sortBy, setSortBy] = useState('createdAt')
   const [priceRange, setPriceRange] = useState([0, 5000])
   const [minRating, setMinRating] = useState(0)
   const [loading, setLoading] = useState(true)
 
-  // Fetch products and subcategories
+  const activeSubCategory = subCategory || 'all'
+
+  // Reset filters when category changes
+  useEffect(() => {
+    setPriceRange([0, 5000])
+    setMinRating(0)
+  }, [category])
+
+  // Fetch subcategories when category changes
+  useEffect(() => {
+    const fetchSubcategories = async () => {
+      try {
+        const catResponse = await productAPI.getProductsByCategory(category)
+        setSubcategories(catResponse.data.subcategories || [])
+      } catch (error) {
+        console.error('Error fetching subcategories:', error)
+        setSubcategories([])
+      }
+    }
+
+    fetchSubcategories()
+  }, [category])
+
+  // Fetch products
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,7 +47,7 @@ const Category = () => {
         
         const filters = {
           category,
-          subCategory: selectedSubcategory !== 'all' ? selectedSubcategory : null,
+          subCategory: activeSubCategory !== 'all' ? activeSubCategory : null,
           search: searchQuery,
           sort: sortBy,
           minPrice: priceRange[0],
@@ -35,12 +57,6 @@ const Category = () => {
 
         const response = await productAPI.getAllProducts(filters)
         setProducts(response.data.data || [])
-
-        // Fetch subcategories only once per category
-        if (subcategories.length === 0) {
-          const catResponse = await productAPI.getProductsByCategory(category)
-          setSubcategories(catResponse.data.subcategories || [])
-        }
       } catch (error) {
         console.error('Error fetching products:', error)
         setProducts([])
@@ -50,10 +66,16 @@ const Category = () => {
     }
 
     fetchData()
-  }, [category, selectedSubcategory, sortBy, priceRange, minRating, searchQuery])
+  }, [category, activeSubCategory, sortBy, priceRange, minRating, searchQuery])
 
   const handleSubcategoryChange = (sub) => {
-    setSelectedSubcategory(sub)
+    const newParams = new URLSearchParams(searchParams)
+    if (sub === 'all') {
+      newParams.delete('sub')
+    } else {
+      newParams.set('sub', sub)
+    }
+    setSearchParams(newParams)
   }
 
   return (
@@ -78,7 +100,7 @@ const Category = () => {
                   <button
                     onClick={() => handleSubcategoryChange('all')}
                     className={`w-full text-left px-3 py-2 rounded-lg transition ${
-                      selectedSubcategory === 'all'
+                      activeSubCategory === 'all'
                         ? 'bg-green-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
@@ -90,7 +112,7 @@ const Category = () => {
                       key={sub}
                       onClick={() => handleSubcategoryChange(sub)}
                       className={`w-full text-left px-3 py-2 rounded-lg transition capitalize ${
-                        selectedSubcategory === sub
+                        activeSubCategory === sub
                           ? 'bg-green-600 text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
@@ -168,6 +190,7 @@ const Category = () => {
                   <option value="popular">Most Popular</option>
                   <option value="rating">Highest Rated</option>
                   <option value="price">Price: Low to High</option>
+                  <option value="priceDesc">Price: High to Low</option>
                 </select>
               </div>
             </div>

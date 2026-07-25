@@ -86,19 +86,6 @@ const products = [
     careInstructions: 'Light: Bright, indirect light | Water: Keep soil moderately moist | Temperature: 18-27°C'
   },
   {
-    name: 'Pothos (Golden Pothos)',
-    category: 'plants',
-    subCategory: 'indoor',
-    price: 129,
-    discountPrice: 79,
-    stock: 60,
-    rating: 4.9,
-    reviews: 312,
-    deliveryTime: '45',
-    description: 'Easy to grow trailing vine. Perfect for hanging baskets and shelves. Very forgiving plant.',
-    careInstructions: 'Light: Can tolerate low light | Water: Water when top inch is dry | Temperature: 18-25°C'
-  },
-  {
     name: 'Jade Plant',
     category: 'plants',
     subCategory: 'indoor',
@@ -177,19 +164,6 @@ const products = [
     deliveryTime: '45',
     description: 'Fresh coriander (cilantro) for Indian cooking. Both leaves and seeds are useful.',
     careInstructions: 'Light: Bright light | Water: Keep soil moist | Temperature: 15-20°C | Harvest leaves regularly'
-  },
-  {
-    name: 'Parsley Plant',
-    category: 'plants',
-    subCategory: 'vegetable',
-    price: 69,
-    discountPrice: 45,
-    stock: 45,
-    rating: 4.5,
-    reviews: 76,
-    deliveryTime: '45',
-    description: 'Fresh parsley for garnish and cooking. Rich in nutrients and vitamins.',
-    careInstructions: 'Light: Partial shade | Water: Keep soil moist | Temperature: 15-20°C | Rich in nutrients'
   },
 
   // FRUIT PLANTS
@@ -432,17 +406,87 @@ const products = [
     deliveryTime: '30',
     description: 'Fresh papaya seeds. Quick fruiting variety. Tropical flavor.',
     careInstructions: 'Sow fresh seeds | Warm soil needed | Germination: 2-3 weeks | Fruiting: 4-6 months'
+  },
+  // SOIL AND FERTILIZERS
+  {
+    name: 'Premium Potting Soil Mix',
+    category: 'soil',
+    subCategory: 'potting',
+    price: 199,
+    discountPrice: 149,
+    stock: 60,
+    rating: 4.8,
+    reviews: 187,
+    deliveryTime: '45',
+    description: 'Enriched potting soil mix with coco peat, vermicompost, and essential nutrients. Promotes healthy root growth and water retention.',
+    careInstructions: 'Use directly for potting | Water moderately after planting | Suitable for all indoor and outdoor plants'
+  },
+  {
+    name: 'Organic Vermicompost',
+    category: 'soil',
+    subCategory: 'organic',
+    price: 149,
+    discountPrice: 99,
+    stock: 75,
+    rating: 4.9,
+    reviews: 243,
+    deliveryTime: '45',
+    description: '100% organic earthworm compost. Rich in humic acids and micro-nutrients to boost plant growth and immunity.',
+    careInstructions: 'Mix 20-30% with garden soil | Apply monthly for best results | Store in a cool, dry place'
+  },
+  {
+    name: 'Coco Peat Block',
+    category: 'soil',
+    subCategory: 'potting',
+    price: 129,
+    discountPrice: 79,
+    stock: 50,
+    rating: 4.7,
+    reviews: 156,
+    deliveryTime: '45',
+    description: 'Compressed coco peat block. Expands up to 75 liters of fluffy soil medium when hydrated. Excellent moisture retainer.',
+    careInstructions: 'Soak in water to expand | Mix with soil or use as soil-less medium | Ideal for seed germination'
+  },
+  {
+    name: 'Neem Cake Powder',
+    category: 'soil',
+    subCategory: 'organic',
+    price: 99,
+    discountPrice: 69,
+    stock: 40,
+    rating: 4.6,
+    reviews: 112,
+    deliveryTime: '45',
+    description: 'Natural organic fertilizer and pest repellent. Protects plant roots from nematodes and soil-borne pathogens.',
+    careInstructions: 'Mix 50g per pot during soil preparation | Apply twice a year | Works as a slow-release fertilizer'
+  },
+  {
+    name: 'Perlite for Plants',
+    category: 'soil',
+    subCategory: 'fertilizer',
+    price: 159,
+    discountPrice: 119,
+    stock: 35,
+    rating: 4.7,
+    reviews: 98,
+    deliveryTime: '45',
+    description: 'Premium drainage-boosting perlite. Light-weight volcanic mineral that prevents soil compaction and aids aeration.',
+    careInstructions: 'Mix 10-20% with potting soil | Excellent for succulents and cacti | Helps prevent root rot'
   }
 ]
 
-async function seedDatabase() {
+export async function seedDatabase(force = false) {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/greencart')
-    console.log('✅ MongoDB connected')
+    const count = await Product.countDocuments()
+    if (count > 0 && !force) {
+      console.log('📊 Database already has products. Skipping seeding.')
+      return
+    }
 
-    // Clear existing products
-    await Product.deleteMany({})
-    console.log('🗑️ Cleared existing products')
+    if (force) {
+      await Product.deleteMany({})
+      console.log('🗑️ Cleared existing products')
+    }
 
     // Add images to products
     const productsWithImages = products.map(product => ({
@@ -463,18 +507,27 @@ async function seedDatabase() {
       'Plants (Fruit)': await Product.countDocuments({ category: 'plants', subCategory: 'fruit' }),
       'Seeds (Flower)': await Product.countDocuments({ category: 'seeds', subCategory: 'flower' }),
       'Seeds (Vegetable)': await Product.countDocuments({ category: 'seeds', subCategory: 'vegetable' }),
-      'Seeds (Fruit)': await Product.countDocuments({ category: 'seeds', subCategory: 'fruit' })
+      'Seeds (Fruit)': await Product.countDocuments({ category: 'seeds', subCategory: 'fruit' }),
+      'Soil (Potting)': await Product.countDocuments({ category: 'soil', subCategory: 'potting' }),
+      'Soil (Organic)': await Product.countDocuments({ category: 'soil', subCategory: 'organic' }),
+      'Soil (Fertilizer)': await Product.countDocuments({ category: 'soil', subCategory: 'fertilizer' })
     }
     
     Object.entries(summary).forEach(([cat, count]) => {
       console.log(`  ${cat}: ${count} products`)
     })
-
-    process.exit(0)
   } catch (error) {
     console.error('❌ Error seeding database:', error)
-    process.exit(1)
   }
 }
 
-seedDatabase()
+// If run directly
+if (process.argv[1] && process.argv[1].includes('seeds.js')) {
+  const force = process.argv.includes('--force')
+  import('mongoose').then(async (mongoose) => {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/greencart')
+    console.log('✅ MongoDB connected (Direct Run)')
+    await seedDatabase(force)
+    process.exit(0)
+  })
+}
