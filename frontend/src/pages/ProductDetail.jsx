@@ -5,6 +5,7 @@ import { useWishlist } from '../context/WishlistContext'
 import { formatPrice } from '../utils/formatters'
 import { showToast } from '../utils/toast'
 import ProductCard from '../components/ProductCard'
+import AiGrowthGuideCard from '../components/AiGrowthGuideCard'
 import { productAPI } from '../utils/api'
 
 const ProductDetail = () => {
@@ -248,6 +249,13 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
+
+        {/* AI Growth & Plant Care Advisor Card */}
+        <AiGrowthGuideCard 
+          productName={product.name} 
+          category={product.category} 
+          subCategory={product.subCategory} 
+        />
 
         {/* Tabs */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">

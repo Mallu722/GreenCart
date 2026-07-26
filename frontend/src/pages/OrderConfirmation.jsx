@@ -1,6 +1,7 @@
 import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { formatDate } from '../utils/formatters'
+import AiGrowthGuideCard from '../components/AiGrowthGuideCard'
 
 const OrderConfirmation = () => {
   const { orderId } = useParams()
@@ -88,7 +89,7 @@ const OrderConfirmation = () => {
             </li>
             <li className="flex items-start gap-3">
               <span className="text-green-600 mt-1">✓</span>
-              <span>Keep ₹{Math.floor(Math.random() * 500) + 500} cash ready for payment</span>
+              <span>Keep cash or UPI ready for delivery</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-green-600 mt-1">✓</span>
@@ -99,6 +100,15 @@ const OrderConfirmation = () => {
               <span>7-day return policy if you're not satisfied</span>
             </li>
           </ul>
+        </div>
+
+        {/* AI Growing Instructions for Ordered Plant */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+            <span>✨</span> Gemini AI Growth & Care Guide
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">Here are customized growing instructions, temperature recommendations, and soil tips for your ordered items:</p>
+          <AiGrowthGuideCard productName="Money Plant" category="plants" subCategory="indoor" />
         </div>
 
         {/* Actions */}

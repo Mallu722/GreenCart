@@ -6,6 +6,7 @@ import productRoutes from './routes/products.js'
 import authRoutes from './routes/auth.js'
 import orderRoutes from './routes/orders.js'
 import adminRoutes from './routes/admin.js'
+import aiRoutes from './routes/aiRoutes.js'
 import { seedDatabase } from './seeds.js'
 
 dotenv.config()
@@ -33,6 +34,7 @@ app.use('/api/products', productRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/ai', aiRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {

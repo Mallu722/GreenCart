@@ -78,4 +78,11 @@ export const adminAPI = {
   updateOrderStatus: (id, statusData) => api.patch(`/admin/orders/${id}`, statusData)
 }
 
+export const aiAPI = {
+  getGrowthGuide: (name, category = 'plants', subCategory = 'indoor') => 
+    api.get(`/ai/growth-guide?name=${encodeURIComponent(name)}&category=${encodeURIComponent(category)}&subCategory=${encodeURIComponent(subCategory)}`),
+  askDoctor: (productName, question) =>
+    api.post('/ai/ask-doctor', { productName, question })
+}
+
 export default api
