@@ -50,25 +50,25 @@ const Checkout = () => {
   }
 
   const handlePlaceOrder = async () => {
+    const orderData = {
+      orderId: generateOrderId(),
+      items: [...cartItems]
+    }
+    localStorage.setItem(`order_${orderData.orderId}`, JSON.stringify(orderData))
+
     if (paymentMethod === 'upi') {
-      // Mock UPI payment
       setTimeout(() => {
-        const orderId = generateOrderId()
         clearCart()
-        navigate(`/order-confirmation/${orderId}`)
+        navigate(`/order-confirmation/${orderData.orderId}`)
       }, 1000)
     } else if (paymentMethod === 'card') {
-      // Mock card payment
       setTimeout(() => {
-        const orderId = generateOrderId()
         clearCart()
-        navigate(`/order-confirmation/${orderId}`)
+        navigate(`/order-confirmation/${orderData.orderId}`)
       }, 1000)
     } else {
-      // COD - No payment required
-      const orderId = generateOrderId()
       clearCart()
-      navigate(`/order-confirmation/${orderId}`)
+      navigate(`/order-confirmation/${orderData.orderId}`)
     }
   }
 

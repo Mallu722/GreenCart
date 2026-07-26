@@ -7,6 +7,13 @@ const OrderConfirmation = () => {
   const { orderId } = useParams()
   const deliveryDate = new Date(Date.now() + 45 * 60000)
 
+  // Retrieve actual ordered items from localStorage
+  const savedOrderRaw = localStorage.getItem(`order_${orderId}`)
+  const savedOrder = savedOrderRaw ? JSON.parse(savedOrderRaw) : null
+  const orderedItems = (savedOrder && savedOrder.items && savedOrder.items.length > 0)
+    ? savedOrder.items
+    : [{ name: 'Money Plant', category: 'plants', subCategory: 'indoor' }]
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-12">
@@ -102,13 +109,29 @@ const OrderConfirmation = () => {
           </ul>
         </div>
 
-        {/* AI Growing Instructions for Ordered Plant */}
+        {/* AI Growing Instructions for Ordered Plants & Seeds */}
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
             <span>✨</span> Gemini AI Growth & Care Guide
           </h2>
-          <p className="text-sm text-gray-600 mb-4">Here are customized growing instructions, temperature recommendations, and soil tips for your ordered items:</p>
-          <AiGrowthGuideCard productName="Money Plant" category="plants" subCategory="indoor" />
+          <p className="text-sm text-gray-600 mb-4">
+            Customized growing instructions, temperature recommendations, and soil tips for your ordered items:
+          </p>
+
+          <div className="space-y-4">
+            {orderedItems.map((item, idx) => (
+              <div key={item._id || idx}>
+                <div className="flex items-center gap-2 font-semibold text-emerald-800 text-sm mb-1 px-1">
+                  <span>🪴</span> Item #{idx + 1}: <span className="text-gray-900 font-bold">{item.name}</span>
+                </div>
+                <AiGrowthGuideCard 
+                  productName={item.name} 
+                  category={item.category || 'plants'} 
+                  subCategory={item.subCategory || 'indoor'} 
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Actions */}
